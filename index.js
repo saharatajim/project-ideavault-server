@@ -47,6 +47,7 @@ async function server() {
     const newIdea=req.body
      console.log(newIdea);
     const result=await ideasCollection.insertOne(newIdea)
+    console.log(result)
     res.json(result)
     
   })
@@ -69,6 +70,14 @@ app.get("/my-ideas/:userId",async (req,res)=>{
     }).toArray()
     res.json(result)
 })
+app.delete("/my-ideas/:userId",async (req,res)=>{
+   const{userId}=req.params
+ const result=await ideasCollection.deleteOne({
+      userId
+    })
+    res.json(result)
+})
+
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
