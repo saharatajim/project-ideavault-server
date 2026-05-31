@@ -23,7 +23,7 @@ app.listen(port, () => {
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = process.env.MONGODB_URI;
 
 
@@ -50,8 +50,25 @@ async function server() {
     res.json(result)
     
   })
+  app.get("/ideas",async(req,res)=>{
+    const allideas=await ideasCollection.find().toArray()
+    res.json(allideas)
+  })
+  app.get("/ideas/:id",async(req,res)=>{
+    const{id}=req.params
+    const result=await ideasCollection.findOne({
+      _id: new ObjectId(id)
+    })
+    res.json(result)
+  })
 
-
+app.get("/my-ideas/:userId",async (req,res)=>{
+   const{userId}=req.params
+ const result=await ideasCollection.find({
+      userId
+    }).toArray()
+    res.json(result)
+})
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
