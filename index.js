@@ -41,6 +41,7 @@ async function server() {
 
      const db=client.db("ideavault")
    const ideasCollection=db.collection("ideas")
+   const commentsCollection=db.collection("comments")
     await client.connect();
 
       app.post("/ideas",async(req,res)=>{
@@ -87,7 +88,23 @@ app.patch("/my-ideas/:userId",async(req,res)=>{
   )
   res.json(result)
 })
-
+      app.post("/comments",async(req,res)=>{
+    const newComment=req.body
+     console.log(newComment);
+    const result=await commentsCollection.insertOne(newComment)
+    console.log(result)
+    res.json(result)
+    
+  })
+    app.get("/comments",async(req,res)=>{
+    const allComments=await commentsCollection.find().toArray()
+    res.json(allComments)
+  })
+app.delete("/comments/:id",async(req,res)=>{
+   const {id}=req.params
+     const result = await commentsCollection.deleteOne({ _id: new ObjectId(id) })
+      res.json(result)
+  })
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
