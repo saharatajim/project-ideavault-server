@@ -77,7 +77,16 @@ app.delete("/my-ideas/:userId",async (req,res)=>{
     })
     res.json(result)
 })
-
+app.patch("/my-ideas/:userId",async(req,res)=>{
+  const {userId}=req.params
+  const updateIdea=req.body
+  console.log(updateIdea)
+  const result = await ideasCollection.updateOne(
+    {userId},
+    {$set:updateIdea}
+  )
+  res.json(result)
+})
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
