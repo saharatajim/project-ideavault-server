@@ -24,6 +24,7 @@ app.listen(port, () => {
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const console = require("node:console");
 const uri = process.env.MONGODB_URI;
 
 
@@ -88,7 +89,10 @@ app.patch("/my-ideas/:userId",async(req,res)=>{
   )
   res.json(result)
 })
-      app.post("/comments",async(req,res)=>{
+
+  // comments collection
+      app.post("/comments/",async(req,res)=>{
+        
     const newComment=req.body
      console.log(newComment);
     const result=await commentsCollection.insertOne(newComment)
@@ -96,15 +100,42 @@ app.patch("/my-ideas/:userId",async(req,res)=>{
     res.json(result)
     
   })
+
     app.get("/comments",async(req,res)=>{
     const allComments=await commentsCollection.find().toArray()
     res.json(allComments)
   })
+  app.get("/comments/:ideaId",async (req,res)=>{
+   const{ideaId}=req.params
+  const allComments = await commentsCollection.find({ selectedIdeaById: ideaId }).toArray()
+    res.json(allComments)
+})
 app.delete("/comments/:id",async(req,res)=>{
    const {id}=req.params
      const result = await commentsCollection.deleteOne({ _id: new ObjectId(id) })
       res.json(result)
   })
+  
+  app.patch("/comments/:id",async(req,res)=>{
+  const {id}=req.params
+  const updateComment=req.body
+  console.log(updateComment)
+  const result = await commentsCollection.updateOne(
+    {_id: new ObjectId(id)},
+    {$set:updateComment}
+  )
+  res.json(result)
+})
+  // my interaction page
+  app.get("/comments/user/:userId", async (req, res) => {
+const {userId}=req.params
+console.log(userId)
+const userComments = await commentsCollection.find({userId }).toArray()
+console.log(userComments)
+  res.json(userComments)
+
+})
+
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
